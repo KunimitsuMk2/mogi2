@@ -21,6 +21,10 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'avatar',
+        'postal_code',
+        'address',
+        'building_name',
     ];
 
     /**
@@ -41,4 +45,22 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+   // User モデルに追加するメソッド
+    public function sellingProducts() {
+    return $this->hasMany(Product::class, 'seller_id');
+    }
+    public function comments()
+    {
+    return $this->hasMany(Comment::class);
+    }
+    // User.php に追加
+    public function favorites()
+    {
+        return $this->hasMany(Favorite::class);
+    }
+
+    public function favoritedItems()
+    {
+    return $this->belongsToMany(Item::class, 'favorites', 'user_id', 'item_id');
+    }
 }
