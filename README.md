@@ -43,7 +43,6 @@
 
 <h2>🗄️ データベース設計</h2>
 
-
 ### ER図
 
 ```mermaid
@@ -137,6 +136,7 @@ erDiagram
         timestamp created_at
         timestamp updated_at
     }
+```
 
 <h3>テーブル一覧</h3>
 
@@ -168,7 +168,7 @@ erDiagram
 <tr><td>image_url</td><td>varchar(255)</td><td>商品画像URL</td></tr>
 <tr><td>condition</td><td>varchar(255)</td><td>商品状態</td></tr>
 <tr><td>seller_id</td><td>bigint</td><td>出品者ID（外部キー）</td></tr>
-<tr><td>status</td><td>enum</td><td>商品状態（available/sold）</td></tr>
+<tr><td>status</td><td>varchar(255)</td><td>商品状態（available/sold）</td></tr>
 <tr><td>created_at</td><td>timestamp</td><td>作成日時</td></tr>
 <tr><td>updated_at</td><td>timestamp</td><td>更新日時</td></tr>
 </table>
