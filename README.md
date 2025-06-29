@@ -64,7 +64,7 @@ erDiagram
     users {
         bigint id PK
         varchar name
-        varchar email UK
+        varchar email
         timestamp email_verified_at
         varchar password
         varchar avatar
@@ -85,7 +85,7 @@ erDiagram
         varchar image_url
         varchar condition
         bigint seller_id FK
-        enum status
+        varchar status
         timestamp created_at
         timestamp updated_at
     }
