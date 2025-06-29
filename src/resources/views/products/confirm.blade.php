@@ -79,7 +79,8 @@
                 </div>
             </div>
 
-            <form action="{{ route('purchase.complete', $item) }}" method="POST" class="purchase-form">
+            <!-- 統一された購入フォーム -->
+            <form id="purchase-form" action="{{ route('purchase.complete', $item) }}" method="POST" class="purchase-form">
                 @csrf
                 <input type="hidden" name="payment_method" id="payment-method-input" value="{{ old('payment_method', 'convenience_store') }}">
                 <button type="submit" class="purchase-form__button">購入する</button>
@@ -88,34 +89,30 @@
     </div>
 </div>
 
-<!-- JavaScript for instant update -->
 <script>
-    // DOMが読み込まれたあとに実行
-    document.addEventListener('DOMContentLoaded', function() {
-        // 支払い方法の選択要素
-        const paymentMethodSelect = document.getElementById('payment-method-select');
-        const paymentMethodDisplay = document.getElementById('payment-method-display');
-        const paymentMethodInput = document.getElementById('payment-method-input');
+document.addEventListener('DOMContentLoaded', function() {
+    // 支払い方法変更の処理
+    const paymentMethodSelect = document.getElementById('payment-method-select');
+    const paymentMethodDisplay = document.getElementById('payment-method-display');
+    const paymentMethodInput = document.getElementById('payment-method-input');
+    
+    paymentMethodSelect.addEventListener('change', function() {
+        const selectedMethod = this.value;
+        paymentMethodInput.value = selectedMethod;
         
-        // 支払い方法変更時の処理
-        paymentMethodSelect.addEventListener('change', function() {
-            const selectedMethod = this.value;
-            paymentMethodInput.value = selectedMethod;
-            
-            // 表示テキストを更新
-            if (selectedMethod === 'credit_card') {
-                paymentMethodDisplay.textContent = 'カード支払い';
-            } else {
-                paymentMethodDisplay.textContent = 'コンビニ払い';
-            }
-        });
-        
-        // 初期状態での支払い方法表示を設定
-        if (paymentMethodSelect.value === 'credit_card') {
+        if (selectedMethod === 'credit_card') {
             paymentMethodDisplay.textContent = 'カード支払い';
         } else {
             paymentMethodDisplay.textContent = 'コンビニ払い';
         }
     });
+    
+    // 初期状態の設定
+    if (paymentMethodSelect.value === 'credit_card') {
+        paymentMethodDisplay.textContent = 'カード支払い';
+    } else {
+        paymentMethodDisplay.textContent = 'コンビニ払い';
+    }
+});
 </script>
 @endsection

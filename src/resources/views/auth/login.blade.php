@@ -18,7 +18,7 @@
                 <label for="email">メールアドレス</label>
             </div>
             <div class="form__input--text">
-                <input type="email" id="email" name="email" value="{{ old('email') }}" class="@error('email') is-invalid @enderror" required>
+                <input type="email" id="email" name="email" value="{{ old('email') }}">
             </div>
             @error('email')
                 <p class="form__error">{{ $message }}</p>
@@ -30,7 +30,7 @@
                 <label for="password">パスワード</label>
             </div>
             <div class="form__input--text">
-                <input type="password" id="password" name="password" class="@error('password') is-invalid @enderror" required>
+                <input type="password" id="password" name="password">
             </div>
             @error('password')
                 <p class="form__error">{{ $message }}</p>

@@ -8,7 +8,6 @@ use Illuminate\Support\Facades\Auth;
 
 class LoginController extends Controller
 {
-    //
     public function showLoginForm()
     {
         return view('auth.login');
@@ -28,9 +27,9 @@ class LoginController extends Controller
             return redirect()->intended('/');
         }
 
-        // 認証失敗時はエラーメッセージを返す
+        
         return back()->withErrors([
-            'email' => '認証に失敗しました。メールアドレスまたはパスワードが正しくありません。',
+            'email' => 'ログイン情報が登録されていません',
         ])->onlyInput('email');
     }
 

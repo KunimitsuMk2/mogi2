@@ -2,11 +2,13 @@
 
 namespace Tests\Feature;
 
-use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
+use App\Models\User;
+use Illuminate\Support\Facades\Hash;
 
-class LoginTest extends TestCase
+class UserLoginTest extends TestCase
 {
     use RefreshDatabase;
 
@@ -14,67 +16,107 @@ class LoginTest extends TestCase
     {
         parent::setUp();
         
-        // テストユーザーを作成
-        User::factory()->create([
+        // テスト用ユーザーを作成
+        $this->user = User::create([
+            'name' => 'テストユーザー',
             'email' => 'test@example.com',
-            'password' => bcrypt('password123')
+            'password' => Hash::make('password123'),
+            'email_verified_at' => now(),
         ]);
     }
 
-    /**
-     * メールアドレスが入力されていない場合のテスト
-     */
-    public function test_email_field_is_required()
+    /** @test */
+    public function メールアドレスが入力されていない場合_バリデーションメッセージが表示される()
     {
         $response = $this->post('/login', [
+            'email' => '',
             'password' => 'password123',
         ]);
 
-        $response->assertSessionHasErrors([
+        $response->assertSessionHasErrors('email');
+        $response->assertSessionHasErrorsIn('default', [
             'email' => 'メールアドレスを入力してください'
         ]);
     }
 
-    /**
-     * パスワードが入力されていない場合のテスト
-     */
-    public function test_password_field_is_required()
+    /** @test */
+    public function パスワードが入力されていない場合_バリデーションメッセージが表示される()
     {
         $response = $this->post('/login', [
             'email' => 'test@example.com',
+            'password' => '',
         ]);
 
-        $response->assertSessionHasErrors([
+        $response->assertSessionHasErrors('password');
+        $response->assertSessionHasErrorsIn('default', [
             'password' => 'パスワードを入力してください'
         ]);
     }
 
-    /**
-     * 入力情報が間違っている場合のテスト
-     */
-    public function test_invalid_credentials()
+    /** @test */
+    public function 入力情報が間違っている場合_バリデーションメッセージが表示される()
     {
         $response = $this->post('/login', [
             'email' => 'wrong@example.com',
             'password' => 'wrongpassword',
         ]);
 
-        $response->assertSessionHasErrors([
+        $response->assertSessionHasErrors('email');
+        $response->assertSessionHasErrorsIn('default', [
             'email' => 'ログイン情報が登録されていません'
         ]);
     }
 
-    /**
-     * ログインが成功する場合のテスト
-     */
-    public function test_successful_login()
+    /** @test */
+    public function 正しい情報が入力された場合_ログイン処理が実行される()
     {
         $response = $this->post('/login', [
             'email' => 'test@example.com',
             'password' => 'password123',
         ]);
 
+        // ログインが成功することを確認
+        $this->assertAuthenticatedAs($this->user);
+        
+        // トップページにリダイレクトされることを確認
         $response->assertRedirect('/');
-        $this->assertAuthenticatedAs(User::where('email', 'test@example.com')->first());
+    }
+
+    /** @test */
+    public function ログイン画面が正常に表示される()
+    {
+        $response = $this->get('/login');
+
+        $response->assertStatus(200);
+        $response->assertViewIs('auth.login');
+        $response->assertSee('ログイン');
+        $response->assertSee('メールアドレス');
+        $response->assertSee('パスワード');
+    }
+
+    /** @test */
+    public function ログイン画面から会員登録画面に遷移できる()
+    {
+        $response = $this->get('/login');
+
+        $response->assertSee('会員登録はこちら');
+        
+        // 会員登録リンクをクリック
+        $registerResponse = $this->get('/register');
+        $registerResponse->assertStatus(200);
+        $registerResponse->assertViewIs('auth.register');
+    }
+
+    /** @test */
+    public function 会員登録画面からログイン画面に遷移できる()
+    {
+        $response = $this->get('/register');
+
+        $response->assertSee('ログインはこちら');
+        
+        // ログインリンクをクリック
+        $loginResponse = $this->get('/login');
+        $loginResponse->assertStatus(200);
+        $loginResponse->assertViewIs('auth.login');
     }
 }

@@ -21,28 +21,38 @@ class RegisterRequest extends FormRequest
      *
      * @return array
      */
-   public function rules()
+    public function rules()
     {
         return [
             'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users',
+            'email' => 'required|string|max:255',
             'password' => 'required|string|min:8|confirmed',
-            'password_confirmation' => 'required|string|min:8|same:password',
+            // password_confirmationは不要（confirmedルールが自動で確認）
         ];
     }
 
     public function messages()
     {
         return [
+            // 機能要件FN004の原文メッセージ
             'name.required' => 'お名前を入力してください',
             'email.required' => 'メールアドレスを入力してください',
-            'email.email' => 'メールアドレスの形式が正しくありません',
-            'email.unique' => 'このメールアドレスは既に使用されています',
             'password.required' => 'パスワードを入力してください',
             'password.min' => 'パスワードは8文字以上で入力してください',
-            'password_confirmation.required' => '確認用パスワードを入力してください',
-            'password_confirmation.min' => '確認用パスワードは8文字以上で入力してください',
-            'password_confirmation.same' => 'パスワードと一致しません',
+            'password.confirmed' => 'パスワードと一致しません',
+        ];
+    }
+
+    /**
+     * Get custom attributes for validator errors.
+     *
+     * @return array
+     */
+    public function attributes()
+    {
+        return [
+            'password' => 'パスワード',
+            'password_confirmation' => 'パスワード確認',
         ];
     }
 }

@@ -10,22 +10,13 @@ use App\Http\Controllers\ProductController;
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\FavoriteController;
 
-/*
-|--------------------------------------------------------------------------
-| Web Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register web routes for your application. These
-| routes are loaded by the RouteServiceProvider within a group which
-| contains the "web" middleware group. Now create something great!
-|
-*/// メール認証関連のルート
+// メール認証関連のルート
 Route::get('/email/verify', function () {
     return view('auth.verify-email');
 })->middleware(['auth'])->name('verification.notice');
 
-Route::get('/login', [loginController::class, 'showLoginForm'])->name('login');
-Route::post('/login', [loginController::class, 'login']);
+Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
+Route::post('/login', [LoginController::class, 'login']);
 
 Route::get('/register', [RegisterController::class, 'showRegistrationForm'])->name('register');
 Route::post('/register', [RegisterController::class, 'register']);
@@ -39,26 +30,33 @@ Route::get('/mypage/profile/edit', [ProfileController::class, 'edit'])
 Route::put('/mypage/profile/update', [ProfileController::class, 'update'])
     ->name('mypage.profile.update')
     ->middleware('auth');
-    Route::middleware(['auth'])->group(function () {
+
+Route::middleware(['auth'])->group(function () {
     Route::get('/purchase/{item}', [PurchaseController::class, 'confirm'])->name('products.confirm');
     Route::post('/purchase/{item}/complete', [PurchaseController::class, 'complete'])->name('purchase.complete');
     Route::get('/purchase/{item}/completed', [PurchaseController::class, 'completed'])->name('purchases.completed');
-    // 住所変更関連ルート
+    Route::get('/purchase/{item}/success', [PurchaseController::class, 'success'])->name('purchase.success');
+    Route::get('/purchase/{item}/checkout/success', [PurchaseController::class, 'checkoutSuccess'])->name('purchase.checkout.success');
+});
+
+// 住所変更関連ルート
 Route::middleware(['auth'])->group(function () {
-    Route::get('/address/edit', [App\Http\Controllers\ProfileController::class, 'editAddress'])->name('address.edit');
-    Route::post('/address/update', [App\Http\Controllers\ProfileController::class, 'updateAddress'])->name('address.update');
- });
- // 商品出品関連のルート
+    Route::get('/address/edit', [ProfileController::class, 'editAddress'])->name('address.edit');
+    Route::post('/address/update', [ProfileController::class, 'updateAddress'])->name('address.update');
+});
+
+// 商品出品関連のルート
 Route::middleware(['auth'])->group(function () {
     Route::get('/sell', [ProductController::class, 'create'])->name('products.create');
     Route::post('/products', [ProductController::class, 'store'])->name('products.store');
-    });
-    // コメント関連のルート
+});
+
+// コメント関連のルート
 Route::middleware(['auth'])->group(function () {
-Route::post('/item/{item}/comment', [CommentController::class, 'store'])->name('comments.store');
-    });
+    Route::post('/item/{item}/comment', [CommentController::class, 'store'])->name('comments.store');
+});
+
 // お気に入り関連のルート
 Route::middleware(['auth'])->group(function () {
-Route::post('/item/{item}/favorite', [FavoriteController::class, 'toggle'])->name('favorites.toggle');
-    });
+    Route::post('/item/{item}/favorite', [FavoriteController::class, 'toggle'])->name('favorites.toggle');
 });

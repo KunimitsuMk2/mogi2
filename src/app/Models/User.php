@@ -47,7 +47,7 @@ class User extends Authenticatable
     ];
    // User モデルに追加するメソッド
     public function sellingProducts() {
-    return $this->hasMany(Product::class, 'seller_id');
+    return $this->hasMany(Item::class, 'seller_id');
     }
     public function comments()
     {

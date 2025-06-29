@@ -14,9 +14,9 @@ class AddressRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'postal_code' => ['required', 'regex:/^\d{3}-\d{4}$/'], // ハイフンありの8文字
+            'postal_code' => ['required', 'regex:/^\d{7}$/'], // ハイフンなし7桁に統一
             'address'     => ['required'],
-            'building_name'    => ['required'],
+            'building_name' => ['nullable'], // 建物名は任意項目に変更
         ];
     }
 
@@ -24,11 +24,8 @@ class AddressRequest extends FormRequest
     {
         return [
             'postal_code.required'  => '郵便番号を入力してください。',
-            'postal_code.regex'     => '郵便番号はハイフンありの形式（例：123-4567）で入力してください。',
+            'postal_code.regex'     => '郵便番号は7桁の数字で入力してください（例：1234567）。',
             'address.required'      => '住所を入力してください。',
-            'building.required'     => '建物名を入力してください。',
         ];
     }
-}// 入力データで更新
-
-
+}
