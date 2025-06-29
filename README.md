@@ -43,6 +43,99 @@
 
 <h2>🗄️ データベース設計</h2>
 
+<h3>ER図</h3>
+```mermaid
+erDiagram
+    users ||--o{ items : "出品"
+    users ||--o{ purchases : "購入"
+    users ||--o{ comments : "コメント"
+    users ||--o{ favorites : "お気に入り"
+    
+    items ||--o{ purchases : "購入される"
+    items ||--o{ comments : "コメントされる"
+    items ||--o{ favorites : "お気に入りされる"
+    items ||--o{ category_item : "属する"
+    
+    categories ||--o{ category_item : "含む"
+
+    users {
+        bigint id PK
+        varchar name
+        varchar email UK
+        timestamp email_verified_at
+        varchar password
+        varchar avatar
+        varchar postal_code
+        varchar address
+        varchar building_name
+        varchar remember_token
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    items {
+        bigint id PK
+        varchar name
+        text description
+        varchar brand
+        integer price
+        varchar image_url
+        varchar condition
+        bigint seller_id FK
+        enum status
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    purchases {
+        bigint id PK
+        bigint user_id FK
+        bigint item_id FK
+        integer quantity
+        integer price
+        varchar payment_method
+        varchar stripe_payment_id
+        varchar shipping_postal_code
+        text shipping_address
+        varchar shipping_building_name
+        varchar status
+        timestamp purchased_at
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    categories {
+        bigint id PK
+        varchar name
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    category_item {
+        bigint id PK
+        bigint category_id FK
+        bigint item_id FK
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    favorites {
+        bigint id PK
+        bigint user_id FK
+        bigint item_id FK
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    comments {
+        bigint id PK
+        bigint user_id FK
+        bigint item_id FK
+        text content
+        timestamp created_at
+        timestamp updated_at
+    }
+
 <h3>テーブル一覧</h3>
 
 <h4>users テーブル</h4>
