@@ -9,6 +9,10 @@ use App\Http\Controllers\PurchaseController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\FavoriteController;
+// 追加：取引関連コントローラー
+use App\Http\Controllers\TransactionController;
+use App\Http\Controllers\TransactionMessageController;
+use App\Http\Controllers\UserRatingController;
 
 // メール認証関連のルート
 Route::get('/email/verify', function () {
@@ -59,4 +63,21 @@ Route::middleware(['auth'])->group(function () {
 // お気に入り関連のルート
 Route::middleware(['auth'])->group(function () {
     Route::post('/item/{item}/favorite', [FavoriteController::class, 'toggle'])->name('favorites.toggle');
+});
+
+//  追加：取引関連のルート
+Route::middleware(['auth'])->group(function () {
+    // 取引管理
+    Route::get('/transactions', [TransactionController::class, 'index'])->name('transactions.index');
+    Route::get('/transactions/{transaction}', [TransactionController::class, 'show'])->name('transactions.show');
+    Route::post('/transactions/{transaction}/complete', [TransactionController::class, 'complete'])->name('transactions.complete');
+    
+    // メッセージ機能
+    Route::post('/transactions/{transaction}/messages', [TransactionMessageController::class, 'store'])->name('transaction.messages.store');
+    Route::put('/messages/{message}', [TransactionMessageController::class, 'update'])->name('messages.update');
+    Route::delete('/messages/{message}', [TransactionMessageController::class, 'destroy'])->name('messages.destroy');
+    
+    // 評価機能
+    Route::post('/transactions/{transaction}/rating', [UserRatingController::class, 'store'])->name('user.rating.store');
+    Route::get('/ratings', [UserRatingController::class, 'index'])->name('ratings.index');
 });

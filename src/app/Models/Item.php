@@ -72,4 +72,17 @@ class Item extends Model
     {
         return $this->belongsToMany(Category::class, 'category_item');
     }
+   
+
+    // 取引との関係
+    public function transaction()
+    {
+        return $this->hasOne(Transaction::class);
+    }
+
+    // 取引が存在するかチェック
+    public function hasTransaction()
+    {
+        return $this->transaction()->exists();
+    }
 }

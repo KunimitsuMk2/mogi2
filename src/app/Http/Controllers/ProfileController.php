@@ -8,6 +8,8 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\User;
 use App\Models\Item;
 use App\Models\Purchase;
+use App\Models\Transaction;
+use App\Models\UserRating;
 use App\Http\Requests\UpdateProfileRequest;
 use App\Http\Requests\AddressRequest;
 
@@ -23,15 +25,48 @@ class ProfileController extends Controller
         
         // 出品した商品を取得
         $sellingItems = Item::where('seller_id', $user->id)->get();
-        //購入した商品の取得
-        $purchasedItems = Purchase::where('user_id',$user->id)
+        
+        // 購入した商品の取得
+        $purchasedItems = Purchase::where('user_id', $user->id)
                                         ->with('item')
                                         ->get()
                                         ->pluck('item');
 
+        // 追加：取引中商品を取得
+        $transactions = Transaction::where(function($query) use ($user) {
+            $query->where('seller_id', $user->id)
+                  ->orWhere('buyer_id', $user->id);
+        })
+        ->where('status', 'in_progress')
+        ->with(['item', 'messages'])
+        ->orderBy('updated_at', 'desc')
+        ->get();
+
+        // ★ 追加：各取引の未読メッセージ数を計算
+        $transactions->each(function($transaction) use ($user) {
+            $transaction->unread_messages_count = $transaction->getUnreadMessagesCount($user->id);
+        });
+
+        // ★ 追加：未読取引数を計算（タブのバッジ用）
+        $unreadTransactionsCount = $transactions->filter(function($transaction) {
+            return $transaction->unread_messages_count > 0;
+        })->count();
+
+        // ★ 追加：ユーザーの評価平均を計算
+        $averageRating = UserRating::where('rated_user_id', $user->id)->avg('rating') ?? 0;
+        $averageRating = round($averageRating); // 四捨五入
         
-        return view('auth.mypage', compact('user', 'activeTab', 'sellingItems','purchasedItems'));
+        return view('auth.mypage', compact(
+            'user', 
+            'activeTab', 
+            'sellingItems', 
+            'purchasedItems',
+            'transactions',           // ★ 追加
+            'unreadTransactionsCount', // ★ 追加
+            'averageRating'           // ★ 追加
+        ));
     }
+
     /**
      * プロフィール編集画面を表示
      */
@@ -75,6 +110,7 @@ class ProfileController extends Controller
     // マイページにリダイレクトして成功メッセージを表示
     return redirect()->route('mypage')->with('success', 'プロフィールを更新しました');
     }
+
     /*** 住所編集画面を表示*/   
     public function editAddress(Request $request)
    {

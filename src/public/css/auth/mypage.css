@@ -169,6 +169,64 @@
     padding: 30px;
     color: #666;
 }
+/* 既存のmypage.cssに以下を追加 */
+
+/* 星評価のスタイル */
+.mypage__rating {
+    margin-bottom: 15px;
+}
+
+.star {
+    font-size: 20px;
+    margin-right: 2px;
+}
+
+.star--filled {
+    color: #ffc107;
+}
+
+.star--empty {
+    color: #dee2e6;
+}
+
+.no-rating {
+    color: #6c757d;
+    font-size: 14px;
+}
+
+/* 通知バッジのスタイル */
+.notification-badge {
+    background-color: #dc3545;
+    color: white;
+    font-size: 12px;
+    font-weight: bold;
+    padding: 2px 6px;
+    border-radius: 10px;
+    margin-left: 8px;
+    display: inline-block;
+    min-width: 18px;
+    text-align: center;
+}
+
+/* 商品画像の通知マーク */
+.mypage__item-image {
+    position: relative;
+}
+
+.item-notification {
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    background-color: #dc3545;
+    color: white;
+    font-size: 12px;
+    font-weight: bold;
+    padding: 2px 6px;
+    border-radius: 10px;
+    min-width: 18px;
+    text-align: center;
+    z-index: 2;
+}
 
 /* レスポンシブデザイン */
 @media (max-width: 1024px) {

@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Item;
 use App\Models\Purchase;
+// ★ 追加：取引モデル
+use App\Models\Transaction;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
@@ -216,6 +218,7 @@ class PurchaseController extends Controller
     
     /**
      * 購入記録を保存
+     * ★ 修正：取引レコード作成を追加
      */
     private function savePurchaseRecord(Item $item, $user, $paymentMethod, $stripePaymentId = null)
     {
@@ -247,7 +250,18 @@ class PurchaseController extends Controller
         $item->status = 'sold';
         $item->save();
 
-        Log::info('Purchase record saved successfully', ['purchase_id' => $purchase->id]);
+        // ★ 追加：取引レコードを作成
+        $transaction = Transaction::create([
+            'item_id' => $item->id,
+            'seller_id' => $item->seller_id,
+            'buyer_id' => $user->id,
+            'status' => 'in_progress'
+        ]);
+
+        Log::info('Purchase record and transaction created successfully', [
+            'purchase_id' => $purchase->id,
+            'transaction_id' => $transaction->id
+        ]);
     }
     
     /**
